@@ -17,6 +17,7 @@ def upload_image(file_bytes: bytes, filename: str):
     result = imagekit.files.upload(
         file=file_bytes,
         file_name=unique_filename,
+        folder="/Imagekit_Media_Backend"
     )
 
     return {"url": result.url, "file_id": result.file_id}

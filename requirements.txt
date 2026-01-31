@@ -1,4 +1,4 @@
-fastapi
+fastapi[standard]
 uvicorn
 sqlalchemy
 psycopg2-binary
@@ -6,3 +6,5 @@ python-jose
 passlib[bcrypt]
 python-dotenv
 imagekitio
+email-validator
+

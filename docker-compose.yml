@@ -1,0 +1,23 @@
+services:
+  web:
+    build: .
+    ports:
+      - "9000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://postgres:abhilash@db:5432/imagekit_db
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: abhilash
+      POSTGRES_DB: imagekit_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

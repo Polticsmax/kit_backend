@@ -15,6 +15,7 @@ from app.imagekit_service import upload_image , delete_image
 
 
 MAX_FILE_SIZE = 5 * 1024 * 1024  # maximum image upload size
+ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png"]
 
 app = FastAPI(title="Imagekit Media Backend")
 
@@ -68,6 +69,12 @@ def upload_user_image(
     db: Session =Depends(get_db),
     current_user : models.USER = Depends(get_current_user),
 ):
+
+    if file.content_type not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid file type. Only JPEG and PNG images are allowed"
+        )
 
     file_bytes = file.file.read()
 
@@ -133,6 +140,12 @@ def replace_image(
 
     if image.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized")
+
+    if file.content_type not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid file type. Only JPEG and PNG images are allowed"
+        )
 
     delete_image(image.imagekit_file_id)
 
