@@ -1,103 +1,128 @@
-# ImageKit Media Backend
+ImageKit Media Backend :
 
-A robust FastAPI backend application designed to handle social media images. It uses **PostgreSQL** for data persistence and **ImageKit.io** for efficient image storage and delivery. The application features secure JWT authentication and a full suite of image management capabilities.
+A production-ready FastAPI backend for managing social media images.
+It uses PostgreSQL for persistence, ImageKit.io for image storage and delivery, and JWT authentication for security.
+The project is fully Dockerized using Docker and Docker Compose for easy local development and deployment.
 
-## Features
+🚀 Features:
+User Signup – Secure registration with Bcrypt password hashing
 
-1.  **User Signup**: Register new users with secure password hashing (Bcrypt).
-2.  **User Sign In**: Authenticate users and issue JWT access tokens.
-3.  **JWT Authentication**: Secure endpoints using OAuth2 (Password flow).
-4.  **Upload Image**: Upload images to ImageKit.io with optional captions.
-5.  **Update Caption**: Modify the caption of an existing image.
-6.  **Replace Image**: Fully replace an existing image file while maintaining the database record (automatically deletes the old image from ImageKit).
-7.  **Delete Image**: Remove images from both the database and ImageKit storage.
-8.  **Get User Images**: Retrieve a paginated list of images uploaded by the authenticated user.
-9.  **User Profile**: View user profile details including email, user ID, and total upload count.
+User Sign In – JWT-based authentication (OAuth2 password flow)
 
-## Tech Stack
+JWT Authentication – Protected routes using access tokens
 
-*   **Framework**: FastAPI
-*   **Database**: PostgreSQL
-*   **ORM**: SQLAlchemy
-*   **Storage**: ImageKit.io
-*   **Authentication**: Python-Jose (JWT), Bcrypt
-*   **Server**: Uvicorn
+Upload Image – Upload images to ImageKit with optional captions
 
-## Prerequisites
+Update Caption – Modify image captions
 
-*   Python 3.10+
-*   PostgreSQL installed and running.
-*   An [ImageKit.io](https://imagekit.io/) account.
+Replace Image – Replace an image while keeping the same DB record
 
-## Installation
+Old image is automatically deleted from ImageKit
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <your-repo-url>
-    cd kit_backend
-    ```
+Delete Image – Deletes image from both PostgreSQL and ImageKit
 
-2.  **Create and activate a virtual environment:**
-    ```bash
-    # Windows
-    python -m venv venv
-    venv\Scripts\activate
+Get User Images – Paginated list of user-uploaded images
 
-    # macOS/Linux
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
+User Profile – View user info and total uploads
 
-3.  **Install dependencies:**
-    ```bash
-    pip install fastapi uvicorn sqlalchemy psycopg2-binary python-jose[cryptography] python-dotenv imagekitio bcrypt python-multipart
-    ```
+🧰 Tech Stack:
 
-4.  **Set up Environment Variables:**
-    Create a `.env` file in the root directory and add the following configurations:
+Backend: FastAPI
+Database: PostgreSQL
+ORM: SQLAlchemy
+Authentication: JWT (python-jose), Bcrypt
+Image Storage: ImageKit.io
+Server: Uvicorn
+Containerization: Docker, Docker Compose
 
-    ```env
-    # Database Configuration
-    DATABASE_URL=postgresql://<username>:<password>@localhost:5432/<database_name>
+📁 Project Structure:
 
-    # Security
-    JWT_SECRET_KEY=your_super_secret_key_here
-    ALGORITHM=HS256
-    ACCESS_TOKEN_EXPIRE_MINUTES=60
 
-    # ImageKit Configuration
-    IMAGEKIT_PUBLIC_KEY=your_public_key_here
-    IMAGEKIT_PRIVATE_KEY=your_private_key_here
-    IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your_url_endpoint
-    ```
+kit_backend/
+│
+├── app/
+│   ├── main.py               # FastAPI entry point
+│   ├── database.py           # DB connection setup
+│   ├── models.py             # SQLAlchemy models
+│   ├── schemas.py            # Pydantic schemas
+│   ├── auth.py               # JWT & password logic
+│   ├── dependencies.py       # DB & auth dependencies
+│   └── imagekit_service.py   # ImageKit helper logic
+│
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── .dockerignore
+└── README.md
 
-5.  **Database Setup:**
-    *   Create a database in PostgreSQL (e.g., `imagekit_db`).
-    *   The application will automatically create the necessary tables (`users`, `images`) when you run it for the first time.
+🔑 Environment Variables:
+Create a .env file in the project root
 
-## Running the Application
+Env
+# Database
+DATABASE_URL=postgresql://postgres:password@db:5432/imagekit_db
 
-Start the development server using Uvicorn:
+# JWT
+JWT_SECRET_KEY=your_super_secret_key
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=60
 
-```bash
+# ImageKit
+IMAGEKIT_PUBLIC_KEY=your_public_key
+IMAGEKIT_PRIVATE_KEY=your_private_key
+IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your_endpoint
+
+🐳 Running with Docker (Recommended):
+Prerequisites
+Docker
+Docker Compose
+
+Build and start services:
+docker compose up --build
+
+Services started
+FastAPI backend → http://localhost:9000
+PostgreSQL → internal Docker network (db:5432)
+
+Stop containers:
+docker compose down
+
+🧪 API Documentation:
+Once the containers are running:
+Swagger UI
+👉 http://localhost:9000/docs
+ReDoc
+👉 http://localhost:9000/redoc
+
+💻 Running Without Docker (Optional):
+Prerequisites
+
+Python 3.10+
+PostgreSQL running locally
+
+Install dependencies:
+pip install -r requirements.txt
+
+
+Start server:
 uvicorn app.main:app --reload
-```
 
-The API will be available at `http://127.0.0.1:8000`.
+API available at:
+http://127.0.0.1:8000
 
-## API Documentation
+🛡️ Security Notes:
+.env is excluded via .gitignore
+JWT secrets and ImageKit keys are never committed
+Database is isolated inside Docker network
+Passwords are hashed using Bcrypt
 
-FastAPI provides interactive API documentation automatically. Once the server is running, visit:
+📦 Future Enhancements:
+CI/CD with GitHub Actions
+Role-based access control
+Image analytics & metadata
+AWS EC2 + RDS deployment
+S3 fallback storage
 
-*   **Swagger UI**: http://127.0.0.1:8000/docs - Test endpoints directly in the browser.
-*   **ReDoc**: http://127.0.0.1:8000/redoc - Alternative documentation view.
-
-## Project Structure
-
-*   `app/main.py`: Application entry point and route definitions.
-*   `app/models.py`: SQLAlchemy database models (`USER`, `IMAGE`).
-*   `app/schemas.py`: Pydantic models for request/response validation.
-*   `app/auth.py`: Logic for password hashing and JWT token creation.
-*   `app/dependencies.py`: Dependency injection for database sessions and current user retrieval.
-*   `app/imagekit_service.py`: Helper functions to interact with the ImageKit SDK.
-*   `app/database.py`: Database connection setup.
+👤 Author:
+Abhilash
+Backend Engineer | FastAPI | Docker | PostgreSQL
